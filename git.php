@@ -63,7 +63,7 @@ if (!empty($userCommand)) {
         }
 
         body {
-            padding: 5px;
+            padding: 10px;
         }
 
         form {
@@ -99,6 +99,37 @@ if (!empty($userCommand)) {
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script type="text/javascript">
             $(function () {
+                var maxHistory = 100;
+                var positionCommand = -1;
+                var commandCurrent = '';
+                var addCommand = function (command) {
+                    var ls = localStorage['commands'];
+                    var commands = [];
+                    if(ls) {
+                        commands = JSON.parse(ls);
+                    }
+                    while(commands.length > maxHistory) {
+                        commands.shift();
+                    }
+                    commands.push(command);
+                    localStorage['commands'] = JSON.stringify(commands);
+                };
+                var getCommand = function (at) {
+                    var ls = localStorage['commands'];
+                    var commands = [];
+                    if(ls) {
+                        commands = JSON.parse(ls);
+                    }
+                    if(at < 0) {
+                        positionCommand = at = -1;
+                        return commandCurrent;
+                    }
+                    if(at >= commands.length) {
+                        positionCommand = at = commands.length - 1;
+                    }
+                    return commands[commands.length - at - 1];
+                };
+
                 var screen = $('pre');
                 var input = $('input').focus();
                 var form = $('form');
@@ -106,17 +137,37 @@ if (!empty($userCommand)) {
                     window.scrollTo(0,document.body.scrollHeight);
                 };
                 form.submit(function () {
-                    var command = input.val();
+                    var command = $.trim(input.val());
+                    if(command == '')
+                        return false;
+
                     $("<span>&rsaquo; git " + command + "</span><br>").appendTo(screen);
                     scroll();
                     input.val('');
                     form.hide();
+                    addCommand(command);
+
                     $.get('?' + command, function (output) {
                         screen.append(output);
                         form.show();
                         scroll();
                     });
                     return false;
+                });
+
+                input.keydown(function (e) {
+                    var code = (e.keyCode ? e.keyCode : e.which);
+
+                     if(code == 38) {// Up
+                        if(positionCommand == -1) {
+                            commandCurrent = input.val();
+                        }
+                        input.val(getCommand(++positionCommand));
+                     } else if(code == 40) {// Down
+                        input.val(getCommand(--positionCommand));
+                     } else {
+                        positionCommand = -1;
+                     }
                 });
             });
     </script>
