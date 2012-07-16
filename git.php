@@ -1,38 +1,54 @@
 <?php
 ignore_user_abort(true);
 set_time_limit(0);
-$git = 'git';
-$command = "cd . && $git pull";
-//$output = shell_exec($command);
 
-$descriptorspec = array(
-    0 => array("pipe", "r"),  // stdin - канал, из которого дочерний процесс будет читать
-    1 => array("pipe", "w"),  // stdout - канал, в который дочерний процесс будет записывать
-    2 => array("pipe", "w") // stderr - файл для записи
-);
+$userCommand = urldecode($_SERVER['QUERY_STRING']);
+$userCommand = escapeshellcmd($userCommand);
 
-$process = proc_open($command, $descriptorspec, $pipes);
+if (!empty($userCommand)) {
+    $options = array(
+        'git' => 'git',
+        'dir' => '.',
+    );
 
-if (is_resource($process)) {
-    // $pipes теперь выглядит так:
-    // 0 => записывающий обработчик, подключенный к дочернему stdin
-    // 1 => читающий обработчик, подключенный к дочернему stdout
-    // Вывод сообщений об ошибках будет добавляться в /tmp/error-output.txt
+    if(file_exists($file = __DIR__ . '/git-config.php')) {
+        $userOptions = include $file;
+        $options = array_merge($options, $userOptions);
+    }
 
-    fwrite($pipes[0], '');
+    $git = $options['git'];
+    $dir = $options['dir'];
+    $command = "cd $dir && $git $userCommand";
+
+    $descriptorspec = array(
+        0 => array("pipe", "r"), // stdin - read channel
+        1 => array("pipe", "w"), // stdout - write channel
+        2 => array("pipe", "w"), // stdout - for errors
+    );
+
+    $process = proc_open($command, $descriptorspec, $pipes);
+
+    if (!is_resource($process)) {
+        die("Can't open resource with proc_open.");
+    }
+
+    // Dont write any:
+    //fwrite($pipes[0], '');
     fclose($pipes[0]);
 
-    echo "Out:". stream_get_contents($pipes[1]);
+    $output = stream_get_contents($pipes[1]);
     fclose($pipes[1]);
 
-    echo "Error:". stream_get_contents($pipes[2]);
+    $error = stream_get_contents($pipes[2]);
     fclose($pipes[2]);
 
-    // Важно закрывать все каналы перед вызовом
-    // proc_close во избежание мертвой блокировки
+    // Close all pupes before proc_close!
     $return_value = proc_close($process);
 
-    echo "команда вернула $return_value\n";
-}
+    header("Content-Type: text/plain");
+    echo $output;
+    echo $error;
 
-echo "<pre>$output</pre>";
+} else {
+
+}
