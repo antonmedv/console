@@ -11,7 +11,7 @@ if (!empty($userCommand)) {
         'dir' => '.',
     );
 
-    if(file_exists($file = __DIR__ . '/git-config.php')) {
+    if (file_exists($file = __DIR__ . '/git-config.php')) {
         $userOptions = include $file;
         $options = array_merge($options, $userOptions);
     }
@@ -51,4 +51,80 @@ if (!empty($userCommand)) {
 
 } else {
 
+    echo <<<HTML
+<!doctype html>
+<html>
+<head>
+    <title>php-git</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            padding: 5px;
+        }
+
+        form {
+            white-space:nowrap;
+        }
+
+        input {
+            border: none;
+            outline: none;
+            width: 500px;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        pre,
+        form,
+        input {
+            color: #333333;
+            font-family: ‘Lucida Console’, Monaco, monospace;
+            font-size: 16px;
+        }
+
+        pre {
+            white-space:pre;
+        }
+
+        span {
+            color: blue;
+        }
+        </style>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                var screen = $('pre');
+                var input = $('input').focus();
+                var scroll = function () {
+                    window.scrollTo(0,document.body.scrollHeight);
+                };
+                $('form').submit(function () {
+                    var command = input.val();
+                    $("<span>&rsaquo; git " + command + "</span><br>").appendTo(screen);
+                    scroll();
+                    input.val('');
+                    $.get('?' + command, function (output) {
+                        screen.append(output);
+                        scroll();
+                    });
+                    return false;
+                });
+            });
+    </script>
+</head>
+<body>
+    <pre></pre>
+    <form>
+        &rsaquo; git <input type="text" value="">
+    </form>
+</body>
+</html>
+
+HTML;
 }
