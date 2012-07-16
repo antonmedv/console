@@ -61,8 +61,8 @@ if (!empty($userCommand)) {
     $return_value = proc_close($process);
 
     header("Content-Type: text/plain");
-    echo $output;
-    echo $error;
+    echo htmlspecialchars($output);
+    echo htmlspecialchars($error);
 
 } else {
 
