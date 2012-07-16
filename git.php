@@ -2,13 +2,13 @@
 ignore_user_abort(true);
 set_time_limit(0);
 $git = 'git';
-$comand = "cd . && $git remote show origin";
-$output = shell_exec($command);
+$command = "cd . && $git pull";
+//$output = shell_exec($command);
 
 $descriptorspec = array(
     0 => array("pipe", "r"),  // stdin - канал, из которого дочерний процесс будет читать
     1 => array("pipe", "w"),  // stdout - канал, в который дочерний процесс будет записывать
-    2 => array("file", "/tmp/error-output.txt", "a") // stderr - файл для записи
+    2 => array("pipe", "w") // stderr - файл для записи
 );
 
 $process = proc_open($command, $descriptorspec, $pipes);
@@ -19,11 +19,14 @@ if (is_resource($process)) {
     // 1 => читающий обработчик, подключенный к дочернему stdout
     // Вывод сообщений об ошибках будет добавляться в /tmp/error-output.txt
 
-    fwrite($pipes[0], '<?php print_r($_ENV); ?>');
+    fwrite($pipes[0], '');
     fclose($pipes[0]);
 
-    echo stream_get_contents($pipes[1]);
+    echo "Out:". stream_get_contents($pipes[1]);
     fclose($pipes[1]);
+
+    echo "Error:". stream_get_contents($pipes[2]);
+    fclose($pipes[2]);
 
     // Важно закрывать все каналы перед вызовом
     // proc_close во избежание мертвой блокировки
