@@ -169,6 +169,10 @@ if (!empty($userCommand)) {
                         positionCommand = -1;
                      }
                 });
+
+                $(document).click(function () {
+                    input.focus();
+                });
             });
     </script>
 </head>
