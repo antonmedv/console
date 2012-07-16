@@ -1,6 +1,6 @@
 PHP Console for GIT
 ===================
-Simple copy git.php under you git directory and open at in browser.
+Simple copy git.php under you git directory and open it in browser.
 
 Requrements
 -----------
