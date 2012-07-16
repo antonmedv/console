@@ -9,11 +9,26 @@ if (!empty($userCommand)) {
     $options = array(
         'git' => 'git',
         'dir' => '.',
+        'allow' => null,
+        'deny' => null,
     );
 
     if (file_exists($file = __DIR__ . '/git-config.php')) {
         $userOptions = include $file;
         $options = array_merge($options, $userOptions);
+    }
+
+    if(is_array($options['allow'])) {
+        if(!in_array($userCommand, $options['allow']))  {
+            $these = implode('<br>', $options['allow']);
+            die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
+        }
+    }
+
+    if(is_array($options['deny'])) {
+        if(in_array($userCommand, $options['deny']))  {
+            die("<span class='error'>Sorry, but this command is denied.</span><br>");
+        }
     }
 
     $git = $options['git'];
@@ -94,6 +109,10 @@ if (!empty($userCommand)) {
 
         span {
             color: blue;
+        }
+
+        span.error {
+            color: red;
         }
         </style>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
