@@ -101,16 +101,19 @@ if (!empty($userCommand)) {
             $(function () {
                 var screen = $('pre');
                 var input = $('input').focus();
+                var form = $('form');
                 var scroll = function () {
                     window.scrollTo(0,document.body.scrollHeight);
                 };
-                $('form').submit(function () {
+                form.submit(function () {
                     var command = input.val();
                     $("<span>&rsaquo; git " + command + "</span><br>").appendTo(screen);
                     scroll();
                     input.val('');
+                    form.hide();
                     $.get('?' + command, function (output) {
                         screen.append(output);
+                        form.show();
                         scroll();
                     });
                     return false;
