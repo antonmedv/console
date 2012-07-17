@@ -2,6 +2,8 @@ PHP Console for GIT
 ===================
 Simple copy git.php under you git directory and open it in browser.
 
+![alt screen](http://habrastorage.org/storage2/09d/b78/dff/09db78dff6aeaed69c88ec17191f369f.png)
+
 Requrements
 -----------
 PHP must by able to use function "proc_open" and work from git user.
