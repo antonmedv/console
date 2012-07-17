@@ -117,7 +117,7 @@ if (!empty($userCommand)) {
             color: red;
         }
 
-        span.autocomplite span.guess {
+        span.autocomplete span.guess {
             color: #a9a9a9;
         }
     </style>
@@ -180,17 +180,17 @@ if (!empty($userCommand)) {
         })(jQuery);
 
         /**
-         * Autocomplite input.
+         * Autocomplete input.
          */
         (function ($) {
-            $.fn.autocomplite = function (commands) {
+            $.fn.autocomplete = function (commands) {
                 var input = $(this);
-                input.wrap('<span class="autocomplite" style="position: relative;"></span>');
+                input.wrap('<span class="autocomplete" style="position: relative;"></span>');
                 var html =
                     '<span class="overflow" style="position: absolute; z-index: 10;">' +
                         '<span class="repeat" style="opacity: 0;"></span>' +
                         '<span class="guess"></span></span>';
-                $('.autocomplite').prepend(html);
+                $('.autocomplete').prepend(html);
                 var repeat = $('.repeat');
                 var guess = $('.guess');
                 var search = function (text) {
@@ -240,7 +240,7 @@ if (!empty($userCommand)) {
                 window.scrollTo(0, document.body.scrollHeight);
             };
             input.history();
-            input.autocomplite([
+            input.autocomplete([
                 'status',
                 'push',
                 'pull',
