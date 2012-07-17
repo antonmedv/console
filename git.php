@@ -116,6 +116,10 @@ if (!empty($userCommand)) {
         span.error {
             color: red;
         }
+
+        span.autocomplite span.guess {
+            color: #a9a9a9;
+        }
     </style>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript">
@@ -158,8 +162,10 @@ if (!empty($userCommand)) {
                             currentCommand = input.val();
                         }
                         input.val(getCommand(++position));
+                        return false;
                     } else if (code == 40) { // Down
                         input.val(getCommand(--position));
+                        return false;
                     } else {
                         position = -1;
                     }
@@ -174,6 +180,56 @@ if (!empty($userCommand)) {
         })(jQuery);
 
         /**
+         * Autocomplite input.
+         */
+        (function ($) {
+            $.fn.autocomplite = function (commands) {
+                var input = $(this);
+                input.wrap('<span class="autocomplite" style="position: relative;"></span>');
+                var html =
+                    '<span class="overflow" style="position: absolute; z-index: 10;">' +
+                        '<span class="repeat" style="opacity: 0;"></span>' +
+                        '<span class="guess"></span></span>';
+                $('.autocomplite').prepend(html);
+                var repeat = $('.repeat');
+                var guess = $('.guess');
+                var search = function (text) {
+                    var commandFound = '';
+                    if (text != '') {
+                        for (var i = 0; i < commands.length; i++) {
+                            var command = commands[i];
+                            if (command.length > text.length &&
+                                command.substring(0, text.length) == text) {
+                                commandFound = command.substring(text.length, command.length);
+                                break;
+                            }
+                        }
+                    }
+                    guess.text(commandFound);
+                    return text;
+                };
+                var update = function () {
+                    repeat.text(search(input.val()));
+                };
+                input.change(update);
+                input.keyup(update);
+                input.keypress(update);
+                input.keydown(update);
+
+                input.keydown(function (e) {
+                    var code = (e.keyCode ? e.keyCode : e.which);
+                    if(code == 9) {
+                        var val = input.val();
+                        input.val(val + guess.text());
+                        return false;
+                    }
+                });
+
+                return input;
+            };
+        })(jQuery);
+
+        /**
          * Init console.
          */
         $(function () {
@@ -184,6 +240,29 @@ if (!empty($userCommand)) {
                 window.scrollTo(0, document.body.scrollHeight);
             };
             input.history();
+            input.autocomplite([
+                'status',
+                'push',
+                'pull',
+                'add',
+                'bisect',
+                'branch',
+                'checkout',
+                'clone',
+                'commit',
+                'diff',
+                'fetch',
+                'grep',
+                'init',
+                'log',
+                'merge',
+                'mv',
+                'rebase',
+                'reset',
+                'rm',
+                'show',
+                'tag'
+            ]);
             form.submit(function () {
                 var command = $.trim(input.val());
                 if (command == '') {
