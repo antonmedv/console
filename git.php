@@ -18,15 +18,15 @@ if (!empty($userCommand)) {
         $options = array_merge($options, $userOptions);
     }
 
-    if(is_array($options['allow'])) {
-        if(!in_array($userCommand, $options['allow']))  {
+    if (is_array($options['allow'])) {
+        if (!in_array($userCommand, $options['allow'])) {
             $these = implode('<br>', $options['allow']);
             die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
         }
     }
 
-    if(is_array($options['deny'])) {
-        if(in_array($userCommand, $options['deny']))  {
+    if (is_array($options['deny'])) {
+        if (in_array($userCommand, $options['deny'])) {
             die("<span class='error'>Sorry, but this command is denied.</span><br>");
         }
     }
@@ -63,10 +63,9 @@ if (!empty($userCommand)) {
     header("Content-Type: text/plain");
     echo htmlspecialchars($output);
     echo htmlspecialchars($error);
-
-} else {
-
-    echo <<<HTML
+    exit;
+}
+?>
 <!doctype html>
 <html>
 <head>
@@ -124,10 +123,10 @@ if (!empty($userCommand)) {
                 var addCommand = function (command) {
                     var ls = localStorage['commands'];
                     var commands = [];
-                    if(ls) {
+                    if (ls) {
                         commands = JSON.parse(ls);
                     }
-                    while(commands.length > maxHistory) {
+                    while (commands.length > maxHistory) {
                         commands.shift();
                     }
                     commands.push(command);
@@ -136,14 +135,14 @@ if (!empty($userCommand)) {
                 var getCommand = function (at) {
                     var ls = localStorage['commands'];
                     var commands = [];
-                    if(ls) {
+                    if (ls) {
                         commands = JSON.parse(ls);
                     }
-                    if(at < 0) {
+                    if (at < 0) {
                         positionCommand = at = -1;
                         return commandCurrent;
                     }
-                    if(at >= commands.length) {
+                    if (at >= commands.length) {
                         positionCommand = at = commands.length - 1;
                     }
                     return commands[commands.length - at - 1];
@@ -157,9 +156,9 @@ if (!empty($userCommand)) {
                 };
                 form.submit(function () {
                     var command = $.trim(input.val());
-                    if(command == '')
+                    if (command == '') {
                         return false;
-
+                    }
                     $("<span>&rsaquo; git " + command + "</span><br>").appendTo(screen);
                     scroll();
                     input.val('');
@@ -177,12 +176,12 @@ if (!empty($userCommand)) {
                 input.keydown(function (e) {
                     var code = (e.keyCode ? e.keyCode : e.which);
 
-                     if(code == 38) {// Up
-                        if(positionCommand == -1) {
+                     if (code == 38) {// Up
+                        if (positionCommand == -1) {
                             commandCurrent = input.val();
                         }
                         input.val(getCommand(++positionCommand));
-                     } else if(code == 40) {// Down
+                     } else if (code == 40) {// Down
                         input.val(getCommand(--positionCommand));
                      } else {
                         positionCommand = -1;
@@ -202,6 +201,3 @@ if (!empty($userCommand)) {
     </form>
 </body>
 </html>
-
-HTML;
-}
