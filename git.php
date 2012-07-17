@@ -13,20 +13,20 @@ if (!empty($userCommand)) {
         'deny' => null,
     );
 
-    if (file_exists($file = __DIR__ . '/git-config.php')) {
+    if (is_readable($file = __DIR__ . '/git-config.php')) {
         $userOptions = include $file;
         $options = array_merge($options, $userOptions);
     }
 
-    if(is_array($options['allow'])) {
-        if(!in_array($userCommand, $options['allow']))  {
+    if (is_array($options['allow'])) {
+        if (!in_array($userCommand, $options['allow']))  {
             $these = implode('<br>', $options['allow']);
             die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
         }
     }
 
-    if(is_array($options['deny'])) {
-        if(in_array($userCommand, $options['deny']))  {
+    if (is_array($options['deny'])) {
+        if (in_array($userCommand, $options['deny']))  {
             die("<span class='error'>Sorry, but this command is denied.</span><br>");
         }
     }
@@ -57,7 +57,7 @@ if (!empty($userCommand)) {
     $error = stream_get_contents($pipes[2]);
     fclose($pipes[2]);
 
-    // Close all pupes before proc_close!
+    // Close all pipes before proc_close!
     $return_value = proc_close($process);
 
     header("Content-Type: text/plain");
