@@ -19,14 +19,14 @@ if (!empty($userCommand)) {
     }
 
     if (is_array($options['allow'])) {
-        if (!in_array($userCommand, $options['allow']))  {
+        if (!in_array($userCommand, $options['allow'])) {
             $these = implode('<br>', $options['allow']);
             die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
         }
     }
 
     if (is_array($options['deny'])) {
-        if (in_array($userCommand, $options['deny']))  {
+        if (in_array($userCommand, $options['deny'])) {
             die("<span class='error'>Sorry, but this command is denied.</span><br>");
         }
     }
@@ -64,9 +64,10 @@ if (!empty($userCommand)) {
     echo htmlspecialchars($output);
     echo htmlspecialchars($error);
 
-} else {
+    exit(0);
+}
+?>
 
-    echo <<<HTML
 <!doctype html>
 <html>
 <head>
@@ -82,7 +83,7 @@ if (!empty($userCommand)) {
         }
 
         form {
-            white-space:nowrap;
+            white-space: nowrap;
         }
 
         input {
@@ -99,12 +100,12 @@ if (!empty($userCommand)) {
         form,
         input {
             color: #333333;
-            font-family: ‘Lucida Console’, Monaco, monospace;
+            font-family: ‘ Lucida Console ’, Monaco, monospace;
             font-size: 16px;
         }
 
         pre {
-            white-space:pre;
+            white-space: pre;
         }
 
         span {
@@ -114,94 +115,104 @@ if (!empty($userCommand)) {
         span.error {
             color: red;
         }
-        </style>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script type="text/javascript">
-            $(function () {
-                var maxHistory = 100;
-                var positionCommand = -1;
-                var commandCurrent = '';
-                var addCommand = function (command) {
-                    var ls = localStorage['commands'];
-                    var commands = [];
-                    if(ls) {
-                        commands = JSON.parse(ls);
-                    }
-                    while(commands.length > maxHistory) {
-                        commands.shift();
-                    }
-                    commands.push(command);
-                    localStorage['commands'] = JSON.stringify(commands);
-                };
-                var getCommand = function (at) {
-                    var ls = localStorage['commands'];
-                    var commands = [];
-                    if(ls) {
-                        commands = JSON.parse(ls);
-                    }
-                    if(at < 0) {
-                        positionCommand = at = -1;
-                        return commandCurrent;
-                    }
-                    if(at >= commands.length) {
-                        positionCommand = at = commands.length - 1;
-                    }
-                    return commands[commands.length - at - 1];
-                };
+    </style>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        /**
+         *  History of commands.
+         */
+        (function ($) {
+            var maxHistory = 100;
+            var position = -1;
+            var currentCommand = '';
+            var addCommand = function (command) {
+                var ls = localStorage['commands'];
+                var commands = ls ? JSON.parse(ls) : [];
+                if (commands.length > maxHistory) {
+                    commands.shift();
+                }
+                commands.push(command);
+                localStorage['commands'] = JSON.stringify(commands);
+            };
+            var getCommand = function (at) {
+                var ls = localStorage['commands'];
+                var commands = ls ? JSON.parse(ls) : [];
+                if (at < 0) {
+                    position = at = -1;
+                    return currentCommand;
+                }
+                if (at >= commands.length) {
+                    position = at = commands.length - 1;
+                }
+                return commands[commands.length - at - 1];
+            };
 
-                var screen = $('pre');
-                var input = $('input').focus();
-                var form = $('form');
-                var scroll = function () {
-                    window.scrollTo(0,document.body.scrollHeight);
-                };
-                form.submit(function () {
-                    var command = $.trim(input.val());
-                    if(command == '')
-                        return false;
-
-                    $("<span>&rsaquo; git " + command + "</span><br>").appendTo(screen);
-                    scroll();
-                    input.val('');
-                    form.hide();
-                    addCommand(command);
-
-                    $.get('?' + command, function (output) {
-                        screen.append(output);
-                        form.show();
-                        scroll();
-                    });
-                    return false;
-                });
-
+            $.fn.history = function () {
+                var input = $(this);
                 input.keydown(function (e) {
                     var code = (e.keyCode ? e.keyCode : e.which);
 
-                     if(code == 38) {// Up
-                        if(positionCommand == -1) {
-                            commandCurrent = input.val();
+                    if (code == 38) { // Up
+                        if (position == -1) {
+                            currentCommand = input.val();
                         }
-                        input.val(getCommand(++positionCommand));
-                     } else if(code == 40) {// Down
-                        input.val(getCommand(--positionCommand));
-                     } else {
-                        positionCommand = -1;
-                     }
+                        input.val(getCommand(++position));
+                    } else if (code == 40) { // Down
+                        input.val(getCommand(--position));
+                    } else {
+                        position = -1;
+                    }
                 });
 
-                $(document).click(function () {
-                    input.focus();
+                return input;
+            };
+
+            $.fn.addHistory = function (command) {
+                addCommand(command);
+            };
+        })(jQuery);
+
+        /**
+         * Init console.
+         */
+        $(function () {
+            var screen = $('pre');
+            var input = $('input').focus();
+            var form = $('form');
+            var scroll = function () {
+                window.scrollTo(0, document.body.scrollHeight);
+            };
+            input.history();
+            form.submit(function () {
+                var command = $.trim(input.val());
+                if (command == '') {
+                    return false;
+                }
+
+                $("<span>&rsaquo; git " + command + "</span><br>").appendTo(screen);
+                scroll();
+                input.val('');
+                form.hide();
+                input.addHistory(command);
+
+                $.get('?' + command, function (output) {
+                    screen.append(output);
+                    form.show();
+                    scroll();
                 });
+                return false;
             });
+
+            $(document).click(function () {
+                input.focus();
+            });
+        });
     </script>
 </head>
 <body>
-    <pre></pre>
-    <form>
-        &rsaquo; git <input type="text" value="">
-    </form>
+<pre></pre>
+<form>
+    &rsaquo; git <input type="text" value="">
+</form>
 </body>
 </html>
-
-HTML;
-}
