@@ -21,9 +21,11 @@ return array(
     'dir' => '/home/var/project/', # Path to project. Default: "."
     'allow' => array(
             # List of allowed commands. Default: null (not used)
+            # You can use * for any symbol. Example: "branch *" will allow "branch -v" command and ext.
         ),
     'deny' => array(
             # List of denied commands. Default: null (not used)
+            # You can use * for any symbol. Example: "remote *" will deny "remote -v" command and ext.
         ),
 );
 ```
