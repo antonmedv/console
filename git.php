@@ -20,14 +20,13 @@ if (!empty($userCommand)) {
 
     function searchCommand($command, $array)
     {
-        $inArray = false;
         foreach ($array as $pattern) {
-            $pattern = str_replace('\*', '?(.*?)', preg_quote($pattern));
+            $pattern = str_replace('\*', '.*?', preg_quote($pattern));
             if (preg_match("/^$pattern$/i", $command)) {
-                $inArray = true;
+                return true;
             }
         }
-        return $inArray;
+        return false;
     }
 
     if (is_array($options['allow'])) {
