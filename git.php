@@ -101,7 +101,7 @@ if (!empty($userCommand)) {
     input {
         border: none;
         outline: none;
-        width: 500px;
+        width: 90%;
     }
 
     input:focus {
@@ -194,7 +194,8 @@ if (!empty($userCommand)) {
      * Autocomplete input.
      */
     (function ($) {
-        $.fn.autocomplete = function (commands) {
+        $.fn.autocomplete = function (commands, suggest) {
+            // Wrap and extra html to input.
             var input = $(this);
             input.wrap('<span class="autocomplete" style="position: relative;"></span>');
             var html =
@@ -202,25 +203,31 @@ if (!empty($userCommand)) {
                     '<span class="repeat" style="opacity: 0;"></span>' +
                     '<span class="guess"></span></span>';
             $('.autocomplete').prepend(html);
+
+            // Search of input changes.
             var repeat = $('.repeat');
             var guess = $('.guess');
             var search = function (text) {
-                var commandFound = '';
+                var splited = text.split(' ');
+                text = splited[splited.length - 1];
+                var array = splited.length == 1 ? commands : suggest;
+                var found = '';
                 if (text != '') {
-                    for (var i = 0; i < commands.length; i++) {
-                        var command = commands[i];
+                    for (var i = 0; i < array.length; i++) {
+                        var command = array[i];
                         if (command.length > text.length &&
                             command.substring(0, text.length) == text) {
-                            commandFound = command.substring(text.length, command.length);
+                            found = command.substring(text.length, command.length);
                             break;
                         }
                     }
                 }
-                guess.text(commandFound);
-                return text;
+                guess.text(found);
             };
             var update = function () {
-                repeat.text(search(input.val()));
+                var command = input.val();
+                repeat.text(command);
+                search(command);
             };
             input.change(update);
             input.keyup(update);
@@ -272,7 +279,35 @@ if (!empty($userCommand)) {
             'reset',
             'rm',
             'show',
-            'tag'
+            'tag',
+            'remote',
+            '--version'
+        ], [
+            'HEAD',
+            'origin',
+            'master',
+            'production',
+            'develop',
+            'rename',
+            '--cached',
+            '--global',
+            '--local',
+            '--merged',
+            '--no-merged',
+            '--amend',
+            '--tags',
+            '--no-hardlinks',
+            '--shared',
+            '--reference',
+            '--quiet',
+            '--no-checkout',
+            '--bare',
+            '--mirror',
+            '--origin',
+            '--upload-pack',
+            '--template=',
+            '--depth',
+            '--help'
         ]);
         form.submit(function () {
             var command = $.trim(input.val());
