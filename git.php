@@ -9,8 +9,8 @@ if (!empty($userCommand)) {
     $options = array(
         'git' => 'git',
         'dir' => '.',
-        'allow' => null,
-        'deny' => null,
+        'allow' => array(),
+        'deny' => array(),
     );
 
     if (is_readable($file = __DIR__ . '/git-config.php')) {
@@ -20,24 +20,23 @@ if (!empty($userCommand)) {
 
     function searchCommand($command, $array)
     {
-        $inArray = false;
         foreach ($array as $pattern) {
-            $pattern = str_replace('\*', '?(.*?)', preg_quote($pattern));
+            $pattern = str_replace('\*', '.*?', preg_quote($pattern));
             if (preg_match("/^$pattern$/i", $command)) {
-                $inArray = true;
+                return true;
             }
         }
-        return $inArray;
+        return false;
     }
 
-    if (is_array($options['allow'])) {
+    if (!empty($options['allow'])) {
         if (!searchCommand($userCommand, $options['allow'])) {
             $these = implode('<br>', $options['allow']);
             die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
         }
     }
 
-    if (is_array($options['deny'])) {
+    if (!empty($options['deny'])) {
         if (searchCommand($userCommand, $options['deny'])) {
             die("<span class='error'>Sorry, but this command is denied.</span><br>");
         }
