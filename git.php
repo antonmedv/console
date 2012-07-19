@@ -1,4 +1,35 @@
 <?php
+function formatOutput($command, $output) {
+    if (preg_match("%^diff%is", $command) || preg_match("%^status.*?-.*?v%is", $command)) {
+        $output = formatDiff($output);
+    }
+
+    return $output;
+}
+
+function formatDiff($output) {
+    $lines = explode("\n", $output);
+    foreach ($lines as $key => $line) {
+        if (strpos($line, "-") === 0) {
+            $lines[$key] = '<span class="diff-deleted">' . $line . '</span>';
+        }
+
+        if (strpos($line, "+") === 0) {
+            $lines[$key] = '<span class="diff-added">' . $line . '</span>';
+        }
+
+        if (preg_match("%^@@.*?@@%is", $line)) {
+            $lines[$key] = '<span class="diff-sub-header">' . $line . '</span>';
+        }
+
+        if (preg_match("%^index\s[^.]*?\.\.\S*?\s\S*?%is", $line) || preg_match("%^diff.*?a.*?b%is", $line)) {
+            $lines[$key] = '<span class="diff-header">' . $line . '</span>';
+        }
+    }
+    
+    return implode("\n", $lines);
+}
+
 ignore_user_abort(true);
 set_time_limit(0);
 
@@ -72,7 +103,7 @@ if (!empty($userCommand)) {
     $return_value = proc_close($process);
 
     header("Content-Type: text/plain");
-    echo htmlspecialchars($output);
+    echo formatOutput($userCommand, htmlspecialchars($output));
     echo htmlspecialchars($error);
 
     exit(0);
@@ -134,6 +165,23 @@ $current_dir = $current_dir[count($current_dir) - 1];
 
     span.autocomplete span.guess {
         color: #a9a9a9;
+    }
+
+    .diff-header {
+        color: #333;
+        font-weight: bold;
+    }
+
+    .diff-sub-header {
+        color: #33a;
+    }
+
+    .diff-added {
+        color: #3a3;
+    }
+
+    .diff-deleted {
+        color: #a33;
     }
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
