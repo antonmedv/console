@@ -159,11 +159,11 @@ $current_dir = $current_dir[count($current_dir) - 1];
         color: blue;
     }
 
-    span.error {
+    .error {
         color: red;
     }
 
-    span.autocomplete span.guess {
+    .autocomplete .guess {
         color: #a9a9a9;
     }
 
