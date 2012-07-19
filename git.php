@@ -106,6 +106,10 @@ function formatOutput($command, $output)
         $output = formatDiff($output);
     }
 
+    if (preg_match("%--help%is", $command)) {
+        $output = formatHelp($output);
+    }
+
     return $output;
 }
 
@@ -132,6 +136,14 @@ function formatDiff($output)
 
     return implode("\n", $lines);
 }
+
+function formatHelp($output)
+{
+    // Highlight backslash words with 0x08 symbols.
+    $output = preg_replace('/(\w)[\b]\w/is', "<b>$1</b>", $output);
+    return $output;
+}
+
 ?>
 
 <!doctype html>
