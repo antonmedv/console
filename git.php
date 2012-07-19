@@ -77,6 +77,8 @@ if (!empty($userCommand)) {
 
     exit(0);
 }
+
+$current_dir = realpath(".");
 ?>
 
 <!doctype html>
@@ -130,6 +132,10 @@ if (!empty($userCommand)) {
 
     span.autocomplete span.guess {
         color: #a9a9a9;
+    }
+
+    .current_dir {
+        color: #88c;
     }
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -338,7 +344,7 @@ if (!empty($userCommand)) {
 <body>
 <pre></pre>
 <form>
-    &rsaquo; git <input type="text" value="">
+    <span class="current_dir"><?php echo $current_dir; ?>&nbsp;$&nbsp;</span>git <input type="text" value="">
 </form>
 </body>
 </html>
