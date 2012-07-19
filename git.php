@@ -78,13 +78,15 @@ if (!empty($userCommand)) {
     exit(0);
 }
 
-$current_dir = realpath(".");
+// Show current dir name.
+$current_dir = explode('/', realpath("."));
+$current_dir = $current_dir[count($current_dir) - 1];
 ?>
 
 <!doctype html>
 <html>
 <head>
-<title>php-git</title>
+<title><?php echo $current_dir; ?> - php-git</title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 <style type="text/css">
     * {
@@ -132,10 +134,6 @@ $current_dir = realpath(".");
 
     span.autocomplete span.guess {
         color: #a9a9a9;
-    }
-
-    .current_dir {
-        color: #88c;
     }
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -344,7 +342,7 @@ $current_dir = realpath(".");
 <body>
 <pre></pre>
 <form>
-    <span class="current_dir"><?php echo $current_dir; ?>&nbsp;$&nbsp;</span>git <input type="text" value="">
+    &rsaquo; git <input type="text" value="">
 </form>
 </body>
 </html>
