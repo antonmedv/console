@@ -1,64 +1,26 @@
 <?php
-function formatOutput($command, $output) {
-    if (preg_match("%^diff%is", $command) || preg_match("%^status.*?-.*?v%is", $command)) {
-        $output = formatDiff($output);
-    }
-
-    return $output;
-}
-
-function formatDiff($output) {
-    $lines = explode("\n", $output);
-    foreach ($lines as $key => $line) {
-        if (strpos($line, "-") === 0) {
-            $lines[$key] = '<span class="diff-deleted">' . $line . '</span>';
-        }
-
-        if (strpos($line, "+") === 0) {
-            $lines[$key] = '<span class="diff-added">' . $line . '</span>';
-        }
-
-        if (preg_match("%^@@.*?@@%is", $line)) {
-            $lines[$key] = '<span class="diff-sub-header">' . $line . '</span>';
-        }
-
-        if (preg_match("%^index\s[^.]*?\.\.\S*?\s\S*?%is", $line) || preg_match("%^diff.*?a.*?b%is", $line)) {
-            $lines[$key] = '<span class="diff-header">' . $line . '</span>';
-        }
-    }
-    
-    return implode("\n", $lines);
-}
-
 ignore_user_abort(true);
 set_time_limit(0);
 
 $userCommand = urldecode($_SERVER['QUERY_STRING']);
 $userCommand = escapeshellcmd($userCommand);
 
+$options = array(
+    'git' => 'git',
+    'dir' => '.',
+    'allow' => array(),
+    'deny' => array(),
+);
+
+if (is_readable($file = __DIR__ . '/git-config.php')) {
+    $userOptions = include $file;
+    $options = array_merge($options, $userOptions);
+}
+
+// Choose action if we have user command in query - execute it.
+// Else send to user html frontend of console.
 if (!empty($userCommand)) {
-    $options = array(
-        'git' => 'git',
-        'dir' => '.',
-        'allow' => array(),
-        'deny' => array(),
-    );
-
-    if (is_readable($file = __DIR__ . '/git-config.php')) {
-        $userOptions = include $file;
-        $options = array_merge($options, $userOptions);
-    }
-
-    function searchCommand($command, $array)
-    {
-        foreach ($array as $pattern) {
-            $pattern = str_replace('\*', '.*?', preg_quote($pattern));
-            if (preg_match("/^$pattern$/i", $command)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    // Execute user command.
 
     if (!empty($options['allow'])) {
         if (!searchCommand($userCommand, $options['allow'])) {
@@ -80,7 +42,7 @@ if (!empty($userCommand)) {
     $descriptorspec = array(
         0 => array("pipe", "r"), // stdin - read channel
         1 => array("pipe", "w"), // stdout - write channel
-        2 => array("pipe", "w"), // stdout - for errors
+        2 => array("pipe", "w"), // stdout - error channel
     );
 
     $process = proc_open($command, $descriptorspec, $pipes);
@@ -89,7 +51,7 @@ if (!empty($userCommand)) {
         die("Can't open resource with proc_open.");
     }
 
-    // Dont write any:
+    // TODO: Write passphrase from ssh keys.
     //fwrite($pipes[0], '');
     fclose($pipes[0]);
 
@@ -106,12 +68,60 @@ if (!empty($userCommand)) {
     echo formatOutput($userCommand, htmlspecialchars($output));
     echo htmlspecialchars($error);
 
-    exit(0);
+    exit(0); // Terminate app
+} else {
+    // Send frontend to user.
+
+    // Show current dir name.
+    $current_dir = explode('/', realpath($options['dir']));
+    $current_dir = $current_dir[count($current_dir) - 1];
 }
 
-// Show current dir name.
-$current_dir = explode('/', realpath("."));
-$current_dir = $current_dir[count($current_dir) - 1];
+// Over functions
+
+function searchCommand($command, $array)
+{
+    foreach ($array as $pattern) {
+        $pattern = str_replace('\*', '.*?', preg_quote($pattern));
+        if (preg_match("/^$pattern$/i", $command)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function formatOutput($command, $output)
+{
+    if (preg_match("%^diff%is", $command) || preg_match("%^status.*?-.*?v%is", $command)) {
+        $output = formatDiff($output);
+    }
+
+    return $output;
+}
+
+function formatDiff($output)
+{
+    $lines = explode("\n", $output);
+    foreach ($lines as $key => $line) {
+        if (strpos($line, "-") === 0) {
+            $lines[$key] = '<span class="diff-deleted">' . $line . '</span>';
+        }
+
+        if (strpos($line, "+") === 0) {
+            $lines[$key] = '<span class="diff-added">' . $line . '</span>';
+        }
+
+        if (preg_match("%^@@.*?@@%is", $line)) {
+            $lines[$key] = '<span class="diff-sub-header">' . $line . '</span>';
+        }
+
+        if (preg_match("%^index\s[^.]*?\.\.\S*?\s\S*?%is", $line) || preg_match("%^diff.*?a.*?b%is", $line)) {
+            $lines[$key] = '<span class="diff-header">' . $line . '</span>';
+        }
+    }
+
+    return implode("\n", $lines);
+}
 ?>
 
 <!doctype html>
