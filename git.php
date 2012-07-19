@@ -106,7 +106,7 @@ function formatOutput($command, $output)
         $output = formatDiff($output);
     }
 
-    if (preg_match("%--help%is", $command)) {
+    if (preg_match('/--help/is', $command) || preg_match('/^help/is', $command)) {
         $output = formatHelp($output);
     }
 
