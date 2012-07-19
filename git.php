@@ -1,4 +1,14 @@
 <?php
+/**
+ * PHP Console for GIT
+ *
+ * @author Anton Medvedev <anton@elfet.ru>
+ * @link https://github.com/Elfet/php-git
+ * @license Licensed under the MIT license.
+ * @version 0.1
+ */
+
+
 ignore_user_abort(true);
 set_time_limit(0);
 
