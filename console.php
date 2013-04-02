@@ -165,17 +165,10 @@ function executeCommand($command)
 
 function formatOutput($command, $output)
 {
-    if (preg_match("%^diff%is", $command) || preg_match("%^status.*?-.*?v%is", $command)) {
+    if (preg_match("%^(git )?diff%is", $command) || preg_match("%^status.*?-.*?v%is", $command)) {
         $output = formatDiff($output);
     }
-
-    if (preg_match('/--help/is', $command) ||
-        preg_match('/^help/is', $command) ||
-        preg_match('/^man/is', $command)
-    ) {
-        $output = formatHelp($output);
-    }
-
+    $output = formatHelp($output);
     return $output;
 }
 
@@ -218,7 +211,7 @@ function formatHelp($output)
 
 $autocomplete = array(
     '^\w*$' => array('cd', 'ls', 'mkdir', 'chmod', 'diff', 'rm', 'mv', 'cp', 'more', 'grep', 'ff', 'whoami', 'kill'),
-    '^git \w*$' => array('status', 'push', 'pull', 'add', 'bisect', 'branch', 'checkout', 'clone', 'commit', 'diff', 'fetch', 'grep', 'init', 'log', 'merge', 'mv', 'rebase', 'reset', 'rm', 'show', 'tag', 'remote', '--version'),
+    '^git \w*$' => array('status', 'push', 'pull', 'add', 'bisect', 'branch', 'checkout', 'clone', 'commit', 'diff', 'fetch', 'grep', 'init', 'log', 'merge', 'mv', 'rebase', 'reset', 'rm', 'show', 'tag', 'remote'),
     '^git \w* .*' => array('HEAD', 'origin', 'master', 'production', 'develop', 'rename', '--cached', '--global', '--local', '--merged', '--no-merged', '--amend', '--tags', '--no-hardlinks', '--shared', '--reference', '--quiet', '--no-checkout', '--bare', '--mirror', '--origin', '--upload-pack', '--template=', '--depth', '--help'),
 );
 
@@ -261,6 +254,7 @@ $autocomplete = array(
     input {
         border: none;
         outline: none;
+        background: transparent;
         width: 100%;
     }
 
@@ -314,7 +308,7 @@ $autocomplete = array(
         color: #a33;
     }
 </style>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
     /**
      *  History of commands.
@@ -381,7 +375,7 @@ $autocomplete = array(
             var input = $(this);
             input.wrap('<span class="autocomplete" style="position: relative;"></span>');
             var html =
-                '<span class="overflow" style="position: absolute; z-index: 10;">' +
+                '<span class="overflow" style="position: absolute; z-index: -10;">' +
                     '<span class="repeat" style="opacity: 0;"></span>' +
                     '<span class="guess"></span></span>';
             $('.autocomplete').prepend(html);
