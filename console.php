@@ -14,7 +14,7 @@ $commands = array(
     '*' => '$1',
 );
 
-// Start with this dir
+// Start with this dir.
 $currentDir = __DIR__;
 $allowChangeDir = true;
 
@@ -24,9 +24,9 @@ $deny = array();
 
 // Next comes the code...
 
-/**
- * Controller
- */
+###############################################
+#                Controller                   #
+###############################################
 
 // Use next two for long time executing commands.
 ignore_user_abort(true);
@@ -117,9 +117,9 @@ if (false !== $userCommand) {
     $currentUser = trim($currentUser);
 }
 
-/*
- * Functions
- */
+###############################################
+#                  Functions                  #
+###############################################
 
 function searchCommand($userCommand, array $commands, &$found = false, $inValues = true)
 {
@@ -211,9 +211,9 @@ function formatHelp($output)
     return $output;
 }
 
-/*
- * Autocomplete
- */
+###############################################
+#                Autocomplete                 #
+###############################################
 
 $autocomplete = array(
     '^\w*$' => array('cd', 'ls', 'mkdir', 'chmod', 'diff', 'rm', 'mv', 'cp', 'more', 'grep', 'ff', 'whoami', 'kill'),
@@ -221,9 +221,9 @@ $autocomplete = array(
     '^git \w* .*' => array('HEAD', 'origin', 'master', 'production', 'develop', 'rename', '--cached', '--global', '--local', '--merged', '--no-merged', '--amend', '--tags', '--no-hardlinks', '--shared', '--reference', '--quiet', '--no-checkout', '--bare', '--mirror', '--origin', '--upload-pack', '--template=', '--depth', '--help'),
 );
 
-/*
- * View
- */
+###############################################
+#                    View                     #
+###############################################
 ?>
 
 <!doctype html>
