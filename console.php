@@ -60,14 +60,14 @@ if (false !== $userCommand) {
     if (!empty($allow)) {
         if (!searchCommand($userCommand, $allow)) {
             $these = implode('<br>', $allow);
-            die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
+            die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span>");
         }
     }
 
     // Check command by deny list.
     if (!empty($deny)) {
         if (searchCommand($userCommand, $deny)) {
-            die("<span class='error'>Sorry, but this command is denied.</span><br>");
+            die("<span class='error'>Sorry, but this command is denied.</span>");
         }
     }
 
@@ -80,14 +80,19 @@ if (false !== $userCommand) {
             // Interface will recognize this and save as current dir.
             die("set current directory $newDir");
         } else {
-            die("<span class='error'>cd: $newDir: No such directory.</span><br>");
+            die("<span class='error'>cd: $newDir: No such directory.</span>");
         }
+    }
+
+    // Easter egg
+    if (1 === preg_match('/^(g+?(i((r)l+?)))$/i', $userCommand)) {
+        die(base64_decode('ICAgICAgICAgICAgICAgICAgICAgIC4sLCw6Ojs7dDtNTU1NTU1NTU1CVnQ6Ky4uDQogICAgICAgICAgICAgICAgICAgICAsSVZYVllJQnR0dCs7OytJVlZNTU1NTU1SUjoNCiAgICAgICAgICAgICAgICAgICAgICxZWVZZSXRNWXRpK2krKztYK1J0O3RYV1JNUiwNCiAgICAgICAgICAgICAgICAgICAgIC5ZUmlJWVJNVmlpdFZYUldSWU1JKysrK2l0TU0uLg0KICAgICAgICAgICAgICAgICAgICAgIC5ZKywuLFg7OywsLFlNTU1NTU1NTVJWSXRYTXRpDQogICAgICAgICAgICAgICAgICAgICAgIDtYKzssWDosLiAuLGlpSVJNV01NTUJCUk1NQlkuDQogICAgICAgICAgICAgICAgICAgICAgICB0Uis6STtpOitZO0lpdFlWWU1NTU1NTU1NUmkuDQogICAgICAgICAgICAgICAgICAgICAgICAuK1JYdDssOzouOjpYWElCTU1NTU1NTU1NKzoNCiAgICAgICAgICAgICAgICAgICAgICAgICAgLFJSWGl0WSssLjo7UldNTU1NTU1NTXQuDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgVllJOjo7LC4uOnRWTU1NTU1NQlkrLg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgLlZCQlc7Ozs6OixpLk1NTU1NQmk7Lg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgLnRXUlJWaTs7Oi5YOlZNTU1NTU1ZLg0KICAgICAgICAgICAgICAgICAgICAgICAgICwraSs6LFhZdHQrOixpOixNTU1CUjoNCiAgICAgICAgICAgICAgICAgICAgICAgLlZWLi4uLjoudHQ7OysrOissUk1ZTVYuDQogICAgICAgICAgICAgICAgICAgICAgIDpNOzs6Li4sLC4rdCsrK1l0dC4sKzoNCiAgICAgICAgICAgICAgICAgICAgICAgdFJ0OywuLjsrLiw7Kyt0aXQsDQogICAgICAgICAgICAgICAgICAgICAgOnRYdDssLiwsKyw7K1lSWSwNCiAgICAgICAgICAgICAgICAgICAgOisrOzs7Liw6Ljo7KztpTWkNCiAgICAgICAgICAgICAgICAgICAsUmk6OjosOjs6Ozo6OitJaQ0KICAgICAgICAgICAgICAgICAgICwrO1hpaTssLDs7STt0aXQsLg0KICAgICAgICAgICAgICAgICAgICAgO0JCdCw7Kzo6LDo7aSsuDQogICAgICAgICAgICAgICAgICAgICA7QldYWDs6Ojs7OmlYLg0KICAgICAgICAgICAgICAgICAgICAgOkJXVklpKyt0KztWKw0KICAgICAgICAgICAgICAgICAgICAgIFdCWHRJdGlpK2lXSS4NCiAgICAgICAgICAgICAgICAgICAgICA6TVdJWUl0aStpVlJZLA0KICAgICAgICAgICAgICAgICAgICAgICBSQlhWWUl0aWlJWVhXSSwNCiAgICAgICAgICAgICAgICAgICAgICAgO01SV1dWWXR0dHRJSVhXdC4NCiAgICAgICAgICAgICAgICAgICAgICAgLlhNQlJSWEl0aSsraXRJWFcsDQogICAgICAgICAgICAgICAgICAgICAgICAuQk1CQlJWSWkrOzsrdHRYWC4NCiAgICAgICAgICAgICAgICAgICAgICAgICAsTU1CUlhZdGk7OzsrdElXOw0KICAgICAgICAgICAgICAgICAgICAgICAgICB0TU1SV1l0aSsrK2l0dFhWDQogICAgICAgICAgICAgICAgICAgICAgICAgICArTVJWWXRpKysraXR0V0kNCiAgICAgICAgICAgICAgICAgICAgICAgICAgLlZNV1Z0aWlpaWlpdElSLA0KICAgICAgICAgICAgICAgICAgICAgICAgIC5YQkJXVnR0dHR0dHR0WFINCiAgICAgICAgICAgICAgICAgICAgICAgLixXQlJCWFZ0dHR0dHR0SVd0DQogICAgICAgICAgICAgICAgICAgICAgIDtSV1hXQlhZdHR0dHR0dFlSOw0KICAgICAgICAgICAgICAgICAgICAgLmlSV1ZJaUJXWUl0dHR0dHRZVywNCiAgICAgICAgICAgICAgICAgICAgLnRXVll0aTtXUlZJdHRpdHRJVlYgICAgICAuOiwsDQogICAgICAgICAgICAgICAgICAgIHRXVklpKys7WFJWSUl0dHR0SVhZICAgLi46WVl0WWk7dGl0dFYsDQogICAgICAgICAgICAgICAgICAgdFhZdGkrKyt0V1JWWXR0aXR0WVdJaUlZWVZJdHQ7aVhXKy4uLi4NCiAgICAgICAgICAgICAgICAgIDtXSXQrKytpWFJCQlZZSXRpdElZWFhZdGkraUlZdCsrO0lNUmk7Lg0KICAgICAgICAgICAgICAgIC46WHRpKzsrdFJXdDtCVllJdGl0SVlXVklJSVlYWFdYVlhZdCtpK0lWOw0KICAgICAgICAgICAgICAgIC50WWkrOztJV0k7OztCVlZJdGl0SVhCUlZJdDs7Ojo6Ojt0SVZYUmlYdA0KICAgICAgICAgICAgICAgIDpWaWlpKytpO2l0SVhCWFZ0dGl0VlcsICAgICAgICAgICAgICAgdEJJWA0KICAgICAgICAgICAgICAgIC5YSWlYSXR0SVZSQlJCSUl0dHRJUlggICAgICAgICAgICAgICAgIDpWWA0KICAgICAgICAgICAgICAgIC4sdFhYV1dXVmkrLiBSWFhJdGlZUlYgICAgICAgICAgICAgICAgICAuLg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsQldZaStJUlgNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRCWWlpdFdCLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLldWdGlpSVJJDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVld0aWlpSUIsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLEJJaWlpaVd0DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLkJWaWlpaVlWDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFhYdGlpK1lWDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlSaWlpK1lZDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDtCdGlpK1hJDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBXdGlpK1I7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBYWSt0K0IuDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBZWCt0WVIuDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0WCtpV1YNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlYaStSSQ0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdFlpSVhYDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICxYdGlJWFJ0Lg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA7QklWWVJXSVYNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgK1JZWFhXaVlSLg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpV0lWWXRYTVYNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdEJZSXRSdE0rDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFhCV3R0WDpCOg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0WVlCWFhZUjssUjoNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdElZWVlJWTsgICwu'));
     }
 
     // Check if command is not in commands list.
     if (!searchCommand($userCommand, $commands, $command, false)) {
         $these = implode('<br>', array_keys($commands));
-        die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
+        die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span>");
     }
 
     // Create final command and execute it.
@@ -452,6 +457,7 @@ $autocomplete = array(
         var scroll = function () {
             window.scrollTo(0, document.body.scrollHeight);
         };
+        var putBr = 0;
         input.history();
         input.autocomplete(<?php echo json_encode($autocomplete); ?>);
         form.submit(function () {
@@ -460,7 +466,7 @@ $autocomplete = array(
                 return false;
             }
 
-            $("<span>" + window.currentDirName + "&nbsp;" + window.currentUser + "$&nbsp;" + command + "</span><br>")
+            $((putBr++ ? "<br>" : "") + "<span>" + window.currentDirName + "&nbsp;" + window.currentUser + "$&nbsp;" + command + "</span><br>")
                 .appendTo(screen);
             scroll();
             input.val('');
@@ -475,7 +481,7 @@ $autocomplete = array(
                     $('#currentDirName').text(window.currentDirName);
                     window.document.title = window.titlePattern.replace('*', window.currentDirName);
                 } else {
-                    screen.append(output);
+                    screen.append(output.replace(/\n$/, ''));
                 }
 
                 form.show();
