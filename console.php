@@ -107,7 +107,8 @@ if (false !== $userCommand) {
     $currentDirName = end($currentDirName);
 
     // Show current user.
-    list($currentUser) = executeCommand('whoami');
+    $whoami = isset($commands['*']) ? str_replace('$1', 'whoami', $commands['*']) : 'whoami';
+    list($currentUser) = executeCommand($whoami);
     $currentUser = trim($currentUser);
 }
 
