@@ -58,7 +58,7 @@ if (is_readable($file = __DIR__ . '/console.config.php')) {
 if (false !== $userCommand) {
     // Check command by allow list.
     if (!empty($allow)) {
-        if (!searchArray($userCommand, $allow)) {
+        if (!searchCommand($userCommand, $allow)) {
             $these = implode('<br>', $allow);
             die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
         }
@@ -66,7 +66,7 @@ if (false !== $userCommand) {
 
     // Check command by deny list.
     if (!empty($deny)) {
-        if (searchArray($userCommand, $deny)) {
+        if (searchCommand($userCommand, $deny)) {
             die("<span class='error'>Sorry, but this command is denied.</span><br>");
         }
     }
@@ -85,7 +85,7 @@ if (false !== $userCommand) {
     }
 
     // Check if command is not in commands list.
-    if (!searchCommand($userCommand, $commands, $command)) {
+    if (!searchCommand($userCommand, $commands, $command, false)) {
         $these = implode('<br>', array_keys($commands));
         die("<span class='error'>Sorry, but this command not allowed. Try these:<br>{$these}</span><br>");
     }
@@ -115,23 +115,15 @@ if (false !== $userCommand) {
  * Functions
  */
 
-function searchArray($userCommand, array $commands)
+function searchCommand($userCommand, array $commands, &$found = false, $inValues = true)
 {
-    foreach ($commands as $pattern) {
+    foreach ($commands as $key => $value) {
+        list($pattern, $format) = $inValues ? array($value, '$1') : array($key, $value);
         $pattern = '/^' . str_replace('\*', '(.*?)', preg_quote($pattern)) . '$/i';
         if (preg_match($pattern, $userCommand)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function searchCommand($userCommand, array $commands, &$found = null)
-{
-    foreach ($commands as $pattern => $format) {
-        $pattern = '/^' . str_replace('\*', '(.*?)', preg_quote($pattern)) . '$/i';
-        if (preg_match($pattern, $userCommand)) {
-            $found = preg_replace($pattern, $format, $userCommand);
+            if (false !== $found) {
+                $found = preg_replace($pattern, $format, $userCommand);
+            }
             return true;
         }
     }
@@ -140,14 +132,14 @@ function searchCommand($userCommand, array $commands, &$found = null)
 
 function executeCommand($command)
 {
-    $descriptorspec = array(
+    $descriptors = array(
         0 => array("pipe", "r"), // stdin - read channel
         1 => array("pipe", "w"), // stdout - write channel
         2 => array("pipe", "w"), // stdout - error channel
         3 => array("pipe", "r"), // stdin - This is the pipe we can feed the password into
     );
 
-    $process = proc_open($command, $descriptorspec, $pipes);
+    $process = proc_open($command, $descriptors, $pipes);
 
     if (!is_resource($process)) {
         die("Can't open resource with proc_open.");
