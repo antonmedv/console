@@ -11,9 +11,6 @@
 // Change next variables as you need.
 
 $commands = array(
-    'git*' => 'git $1',
-    'composer*' => '/usr/local/bin/composer $1',
-    'symfony*' => './app/console $1',
     '*' => '$1',
 );
 
