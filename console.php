@@ -5,7 +5,7 @@
  * @author Anton Medvedev <anton@elfet.ru>
  * @link https://github.com/elfet/console
  * @license Licensed under the MIT license.
- * @version 1.0
+ * @version 2.0
  */
 
 // Change next variables as you need.
