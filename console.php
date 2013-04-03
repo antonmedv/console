@@ -42,6 +42,11 @@ $deny = array();
 ignore_user_abort(true);
 set_time_limit(0);
 
+// If exist config include it.
+if (is_readable($file = __DIR__ . '/console.config.php')) {
+    include $file;
+}
+
 // If we have a user command execute it.
 // Otherwise send user interface.
 if (isset($_GET['command'])) {
@@ -57,11 +62,6 @@ if ($allowChangeDir && isset($_GET['cd'])) {
     if (is_dir($newDir)) {
         $currentDir = $newDir;
     }
-}
-
-// If exist config include it.
-if (is_readable($file = __DIR__ . '/console.config.php')) {
-    include $file;
 }
 
 ###############################################
