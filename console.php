@@ -73,12 +73,12 @@ if (!empty($users)) {
     if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
         header('HTTP/1.1 401 Unauthorized');
         header('WWW-Authenticate: Digest realm="' . $realm . '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) . '"');
-        die('Bye-bye!\n');
+        die("Bye-bye!\n");
     }
 
     // Analyze the PHP_AUTH_DIGEST variable
     if (!($data = httpDigestParse($_SERVER['PHP_AUTH_DIGEST'])) || !isset($users[$data['username']])) {
-        die('Wrong Credentials!\n');
+        die("Wrong Credentials!\n");
     }
 
     // Generate the valid response
@@ -87,7 +87,7 @@ if (!empty($users)) {
     $valid_response = md5($A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2);
 
     if ($data['response'] != $valid_response) {
-        die('Wrong Credentials!\n');
+        die("Wrong Credentials!\n");
     }
 
     // ok, valid username & password
