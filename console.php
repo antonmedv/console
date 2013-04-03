@@ -144,13 +144,14 @@ if (false !== $userCommand) {
     $command = "cd $currentDir && $command";
     list($output, $error, $code) = executeCommand($command);
 
-    header("Content-Type: text/plain");
+    header("Content-Type: text/plain; charset=utf-8");
     echo formatOutput($userCommand, htmlspecialchars($output));
     echo htmlspecialchars($error);
 
     exit(0); // Terminate app
 } else {
     // Send frontend to user.
+    header('Content-Type: text/html; charset=utf-8');
 
     // Show current dir name.
     $currentDirName = explode('/', $currentDir);
