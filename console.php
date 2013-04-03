@@ -22,6 +22,13 @@ $allowChangeDir = true;
 $allow = array();
 $deny = array();
 
+// Digest HTTP Authentication
+
+// To enable, add user: "name" => "password".
+$users = array();
+
+$realm = 'Console';
+
 // Next comes the code...
 
 ###############################################
@@ -49,9 +56,44 @@ if ($allowChangeDir && isset($_GET['cd'])) {
     }
 }
 
+// If exist config include it.
 if (is_readable($file = __DIR__ . '/console.config.php')) {
     include $file;
 }
+
+###############################################
+#              Authentication                 #
+###############################################
+
+// If auth is enabled:
+if (!empty($users)) {
+    if (empty($_SERVER['PHP_AUTH_DIGEST'])) {
+        header('HTTP/1.1 401 Unauthorized');
+        header('WWW-Authenticate: Digest realm="' . $realm . '",qop="auth",nonce="' . uniqid() . '",opaque="' . md5($realm) . '"');
+        die('Bye-bye!');
+    }
+
+    // Analyze the PHP_AUTH_DIGEST variable
+    if (!($data = httpDigestParse($_SERVER['PHP_AUTH_DIGEST'])) || !isset($users[$data['username']])) {
+        die('Wrong Credentials!');
+    }
+
+    // Generate the valid response
+    $A1 = md5($data['username'] . ':' . $realm . ':' . $users[$data['username']]);
+    $A2 = md5($_SERVER['REQUEST_METHOD'] . ':' . $data['uri']);
+    $valid_response = md5($A1 . ':' . $data['nonce'] . ':' . $data['nc'] . ':' . $data['cnonce'] . ':' . $data['qop'] . ':' . $A2);
+
+    if ($data['response'] != $valid_response) {
+        die('Wrong Credentials!');
+    }
+
+    // ok, valid username & password
+    $httpUsername = $data['username'];
+}
+
+###############################################
+#                   Action                    #
+###############################################
 
 // Choose action if we have user command in query - execute it.
 // Else send to user html frontend of console.
@@ -209,6 +251,23 @@ function formatHelp($output)
     // Highlight backslash words with *0x08* symbols.
     $output = preg_replace('/.[\b](.)/is', "<strong>$1</strong>", $output);
     return $output;
+}
+
+function httpDigestParse($txt)
+{
+    // protect against missing data
+    $needed_parts = array('nonce' => 1, 'nc' => 1, 'cnonce' => 1, 'qop' => 1, 'username' => 1, 'uri' => 1, 'response' => 1);
+    $data = array();
+    $keys = implode('|', array_keys($needed_parts));
+
+    preg_match_all('@(' . $keys . ')=(?:([\'"])([^\2]+?)\2|([^\s,]+))@', $txt, $matches, PREG_SET_ORDER);
+
+    foreach ($matches as $m) {
+        $data[$m[1]] = $m[3] ? $m[3] : $m[4];
+        unset($needed_parts[$m[1]]);
+    }
+
+    return $needed_parts ? false : $data;
 }
 
 ###############################################

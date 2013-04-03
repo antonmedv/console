@@ -29,3 +29,14 @@ $deny = array(
     "rm*",
 );
 
+/**
+ * Digest HTTP Authentication
+ *
+ * To enable, add user: "name" => "password".
+ */
+$users = array(
+    'admin' => '1234',
+);
+
+$realm = 'Console';
+
