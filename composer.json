@@ -1,0 +1,10 @@
+{
+    "name": "elfet/console",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Elfet",
+            "email": "anton@elfet.ru"
+        }
+    ]
+}
