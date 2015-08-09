@@ -19,7 +19,7 @@ Features
 
 Requrements
 -----------
-PHP must by able to use function "proc_open".
+PHP must be able to use function "proc_open".
 Also chown .git/ folder to apache user to use git.
 
 Configuration
